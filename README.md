@@ -38,13 +38,13 @@
 
 ## 🗂️ Project Structure
 **personalised-portfolio/**
-- static/ # Uploaded images
-- templates/ # HTML templates (Jinja2)
-- main.py # Main Flask app
-- models.py # SQLAlchemy models
-- utils.py # Helper functions
+- static/         # Uploaded images
+- templates/      # HTML templates (Jinja2)
+- main.py         # Main Flask app
+- models.py       # SQLAlchemy models
+- utils.py        # Helper functions
 - requirements.txt # Project dependencies
-- README.md # This file
+- README.md       # This file
 
 ---
 
@@ -56,7 +56,7 @@
    cd personalised-portfolio
 2. **Install dependencies:**
    pip install -r requirements.txt
-3. **Run the Application**
+3. **Run the Application:**
    python main.py
 
 ---
