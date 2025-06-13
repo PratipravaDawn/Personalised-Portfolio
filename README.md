@@ -38,14 +38,13 @@
 
 ## 🗂️ Project Structure
 personalised-portfolio/
-│
-├── static/                 # Uploaded images
-├── templates/              # HTML templates (Jinja2)
-├── main.py                 # Main Flask app
-├── models.py               # SQLAlchemy models
-├── utils.py                # Helper functions
-├── requirements.txt        # Project dependencies
-└── README.md               # This file
+├── static/ # Uploaded images
+├── templates/ # HTML templates (Jinja2)
+├── main.py # Main Flask app
+├── models.py # SQLAlchemy models
+├── utils.py # Helper functions
+├── requirements.txt # Project dependencies
+└── README.md # This file
 
 ---
 
