@@ -37,14 +37,14 @@
 ---
 
 ## 🗂️ Project Structure
-personalised-portfolio/
-├── static/ # Uploaded images
-├── templates/ # HTML templates (Jinja2)
-├── main.py # Main Flask app
-├── models.py # SQLAlchemy models
-├── utils.py # Helper functions
-├── requirements.txt # Project dependencies
-└── README.md # This file
+**personalised-portfolio/**
+- static/ # Uploaded images
+- templates/ # HTML templates (Jinja2)
+- main.py # Main Flask app
+- models.py # SQLAlchemy models
+- utils.py # Helper functions
+- requirements.txt # Project dependencies
+- README.md # This file
 
 ---
 
@@ -83,7 +83,10 @@ personalised-portfolio/
 
 ![welcome](assets/welcome-ss.png)
 ![login page](assets/login-ss.png)
+![sign page](assets/sign-ss.png)
 ![dashboard](assets/dash-ss.png)
 ![image window](assets/pic-ss.png)
+![edit profile](assets/edit-ss.png)
+![logout](assets/log-ss.png)
 
   
