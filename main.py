@@ -255,4 +255,5 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         db.create_all(bind_key="img")
-    app.run(debug=True)
+    app.run()
+
