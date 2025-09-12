@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Signin Page</title>
+ <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+</head>
+<body>
+    <a class="gg" href="{{url_for('home')}}">
+        <button type="button">Home</button>
+    </a>
+    <button class="theme-toggle" id="themeToggle" style="visibility: hidden;">Theme</button>
+
+    <form action="{{ url_for('give')}}" method="post">
+{% with messages = get_flashed_messages()%}
+    {% if messages%}
+        {% for message in messages%}
+            <h3>{{message}}</h3>
+        {%endfor%}
+    {%endif%}
+{%endwith%}
+        <h2>Sign in</h2>
+        <label for="username">Username</label>
+        <input type="text" placeholder="Enter Username" name="uname" required id="username">
+        <label>Create Password</label>
+        <input type="password" placeholder="Enter Password" name="psw1" required>
+        <label>Confirm Password</label>
+        <input type="password" placeholder="Enter Password" name="psw2" required>
+        <h4 style="font-size: 10px; margin-top: 10px;">Note: Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.</h4>
+        <label>Email</label>
+        <input type="email" placeholder="Enter Email" name="email" required>
+        <button type="submit">Sign In</button>
+    </form>
+  <script src="{{ url_for('static', filename='JS/theme.js') }}">
+  </script>
+</body>
+</html>

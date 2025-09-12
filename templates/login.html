@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+ <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+</head>
+<body>
+
+  <a class="gg" href="{{url_for('home')}}">
+    <button type="button" class="top-btn signin-btn">Home</button>
+  </a>
+
+  <button class="theme-toggle" id="themeToggle" style="visibility: hidden;">Theme</button>
+
+  <!-- Login Form -->
+  <form action="{{ url_for('check')}}" method="post">
+    {% with messages = get_flashed_messages()%}
+      {% if messages%}
+        {% for message in messages%}
+          <h3>{{ message }}</h3>
+        {%endfor%}
+      {%endif%}
+    {%endwith%}
+
+    <h2>Login Here</h2>
+
+    <label for="username">Username</label>
+    <input type="text" placeholder="Enter Username" name="uname" required id="username">
+
+    <label for="password">Password</label>
+    <input type="password" placeholder="Enter Password" name="psw" required id="password">
+
+    <a class="right-link" href="{{url_for('forgot')}}">Forget password?</a>
+
+    <button class="log">Log In</button>
+  </form>
+
+  <script src="{{ url_for('static', filename='JS/theme.js') }}">
+  </script>
+</body>
+</html>

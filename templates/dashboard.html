@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Showcases</title>
+    <link rel="stylesheet" href="static/CSS/dash.css">
+</head>
+<body>
+
+    <header>
+        <div class="about">
+        <img class="pfp-img" src="{{p}}" alt="Profile" >
+        <div>
+            <h1>{{u}} Artworks</h1>
+            <p>{{a}}</p>
+            <h3>Contact: {{m}}</h3>
+        </div>
+        </div>
+        <div style="display:flex; flex-direction: column; gap:10px; ">
+            <a href="{{url_for('logout')}}"> <button class="butt" id="logout"><img class="icons" src="static/photos/Admin/icons/power-off.png"></button> </a>
+            <button class="butt" id="edit" onclick="document.getElementById('editUserModal').style.display='block'"><img class="icons" src="static/photos/Admin/icons/edit.png"></button>
+            <a href="{{url_for('download_pdf')}}"><button class="butt"><img class="icons" src="static/photos/Admin/icons/download-symbol.png"></button></a>
+            <button class="butt" id="themeToggle"><img class="icons" src="static/photos/Admin/icons/night-mode.png"></button>
+        </div>
+    </header>
+
+{% with messages = get_flashed_messages()%}
+    {% if messages%}
+        {% for message in messages%}
+            <p style="padding-left: 20px;">{{message}}</p>
+        {%endfor%}
+    {%endif%}
+{%endwith%}
+
+    <section class="projects-container">
+        <div class="project-card">
+        <button class="uploadbutton" onclick="document.getElementById('uploadModal').style.display='block'"></button>
+            <h3 style="padding-top:20px; text-align: center;">Upload Projects here!!!</h3>
+            </div>
+        {% if i %}
+        {% for img in data %}
+        <div class="project-card">
+            <img src="{{img.image_path}}" alt="{{img.title}}" onclick="openPopup('{{img.image_path}}', '{{img.title}}', '{{img.description}}', '{{img.id}}')" style="cursor: pointer;">
+            <h3>{{img.title}}</h3>
+            <p>{{img.description}}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </section>
+
+<div id="imageModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closePopup()">&times;</span>
+        <img id="popupImage" src="" alt="" />
+        <div style="display: flex; margin-top:20px; justify-content: space-between;">
+            <div id="caption"></div>
+                    <button class="butt" id="bin" style="transition: 0.3s;"
+                        onmouseover="this.style.backgroundColor='red'"
+                        onmouseout="this.style.backgroundColor=''"
+                        onclick="document.getElementById('confirm').style.display='block'">
+                        <img class="icons" src="static/photos/Admin/icons/bin.png">
+                    </button>
+                </div>
+            </div>
+    </div>
+</div>
+
+    <div id="confirm" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('confirm').style.display='none'">&times;</span>
+            <div>
+            <h2 style="text-align: center;">Are you sure you want to delete ?</h2>
+                <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px; ">
+                    <a id="deleteBtn" href="">
+                        <button class="butt">Delete</button>
+                    </a>
+                <button class="butt" onclick="document.getElementById('confirm').style.display='none'">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div id="editUserModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="document.getElementById('editUserModal').style.display='none'">&times;</span>
+    <h2>User: {{u}}</h2>
+    <form action="/edit_user" method="POST" enctype="multipart/form-data">
+        <div style="display: flex; align-items: center; margin-bottom: 20px; position: relative;">
+            <label for="editImageInput" style="cursor: pointer; position: relative; display: inline-block;">
+            <img id="profileImagePreview"
+             src="{{p}}"
+             alt="Profile Image"
+             style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+             <img src="{{ url_for('static', filename='photos/Admin/pencil.png') }}"
+                alt="Edit"
+             style="width: 24px; height: 24px; position: absolute; top: 5px; right: 5px;">
+            </label>
+            <input type="file" id="editImageInput" name="profile_img" style="display: none;" accept="image/*">
+        </div>
+        <h3>About Me:</h3>
+        <textarea name="about">{{a}}</textarea>
+        <div style="margin-top:20px">
+        <button type="submit" class="butt">Save Changes</button>
+        <button type="button" class="butt" onclick="document.getElementById('editUserModal').style.display='none'">Cancel</button>
+        </div>
+    </form>
+  </div>
+</div>
+
+
+<div id="uploadModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="document.getElementById('uploadModal').style.display='none'">&times;</span>
+    <h2>Upload Form</h2>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+      <h3>File Name:*</h3>
+      <input type="text" id="filename" name="filename" placeholder="Enter project name" required>
+       <h3>Description:</h3>
+      <textarea id="desc" name="desc" placeholder="Enter a short description"></textarea>
+      <h3>Select File:*</h3>
+      <input type="file" id="file" name="pic" accept="image/*" required>
+      <div style="margin-top:20px">
+      <button type="submit" class="butt">Upload</button>
+      <button type="button" class="butt" onclick="document.getElementById('uploadModal').style.display='none'">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+  <script src="static/JS/dash.js"></script>
+</body>
+</html>

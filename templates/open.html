@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Personified Portfolio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/st.css') }}">
+</head>
+<body>
+{% with messages = get_flashed_messages()%}
+    {% if messages%}
+        {% for message in messages%}
+            <p>{{message}}</p>
+        {%endfor%}
+    {%endif%}
+{%endwith%}
+    <h1>Welcome</h1>
+    <img src="/static/photos/Admin/artist.png" alt="Welcome Image" />
+    <div class="login">
+        <a href="{{ url_for('red', name='login') }}">
+            <button>Login</button>
+        </a>
+        <a href="{{ url_for('red', name='signin') }}">
+            <button>Sign in</button>
+        </a>
+          <button id="themeToggle">Theme</button>
+    </div>
+<script src="{{ url_for('static', filename='JS/theme.js') }}"></script>
+</body>
+</html>
