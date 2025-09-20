@@ -107,12 +107,11 @@
 ---
 
 ## 📸 Screenshots
-![welcome](assets/welcome-ss.png) 
-![login page](assets/login-ss.png) 
-![sign page](assets/sign-ss.png) 
-![dashboard_dark](assets/dash-dark-ss.png) 
-![dashboard_light](assets/dash-light-ss.png) 
-![image window](assets/pic-ss.png) 
-![edit profile](assets/edit-ss.png) 
-![report](assets/report.png) 
-![logout](assets/log-ss.png)
+![welcome](assets/welcome.png) 
+![login page](assets/login.png) 
+![sign page](assets/sign.png) 
+![dashboard_dark](assets/dashboard_dark.png) 
+![dashboard_light](assets/dashboard_light.png) 
+![image window](assets/image.png) 
+![edit profile](assets/edit.png) 
+![report](assets/report.png)
