@@ -1,5 +1,4 @@
-import os
-import smtplib
+import smtplib, os
 from datetime import timedelta
 from functools import wraps
 from flask import Flask, make_response, render_template, request, session, flash, redirect, url_for, send_file
@@ -7,12 +6,17 @@ from sqlalchemy import exists
 from models import db, Store, Img
 from utils import is_strong_password
 from dotenv import load_dotenv
-from report import generate_portfolio
+from repo import generate_portfolio
+import cloudinary
+import cloudinary.uploader
 
 load_dotenv()
 MYMAIL = os.getenv("MYMAIL")
-KEY = os.getenv("KEY")
+PASSKE = os.getenv("PASSKE")
 SECRET = os.getenv("SECRET")
+CLOUD = os.getenv("CLNAME")
+APIKEY = os.getenv("AKEY")
+SKEY = os.getenv("SKEY")
 
 app = Flask(__name__)
 
@@ -25,6 +29,10 @@ app.secret_key = SECRET
 
 db.init_app(app)
 
+cloudinary.config(cloud_name=CLOUD, api_key=APIKEY, api_secret=SKEY)
+
+def_pfp = "https://res.cloudinary.com/dth1zqqej/image/upload/v1774517832/default_vvlo1w.jpg"
+def_id = "default_vvlo1w"
 
 @app.before_request
 def session_timeout():
@@ -105,9 +113,9 @@ def give():
                 flash(error_msg)
                 return redirect(url_for('red', name='login'))
             def_about = f"Hello I'm {username}!!!"
-            def_pfp = "static/photos/Admin/default.jpg"
 
-            new_user = Store(name=username, key=password1, mail=email, about=def_about, profile=def_pfp)
+
+            new_user = Store(name=username, key=password1, mail=email, about=def_about, pfp_pic=def_pfp, pfp_id = def_id)
             db.session.add(new_user)
             db.session.commit()
 
@@ -135,7 +143,7 @@ def email():
                 try:
                     server = smtplib.SMTP('smtp.gmail.com', 587)
                     server.starttls()
-                    server.login(MYMAIL, KEY)
+                    server.login(MYMAIL, PASSKE)
                     message = f"Subject: Password Recovery\n\nYour password is: {user.key}"
                     server.sendmail(MYMAIL, email, message)
                     server.quit()
@@ -167,7 +175,7 @@ def dash():
     image_query = db.session.query(exists().where(Img.owner == u))
     if image_query:
         image_data = db.session.query(Img).filter_by(owner=u).all()
-    response = make_response(render_template('dashboard.html', u=u, m=user.mail, a=user.about, p=user.profile, i=image_query, data=image_data))
+    response = make_response(render_template('dashboard.html', u=u, m=user.mail, a=user.about, p=user.pfp_pic, i=image_query, data=image_data))
 
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     response.headers['Pragma'] = 'no-cache'
@@ -182,12 +190,12 @@ def pictures():
         tit = request.form.get("filename")
         des = request.form.get("desc")
         pict = request.files.get('pic')
-        os.makedirs(f"static/photos/users/{u}", exist_ok=True)
         if pict:
-            pict.save(os.path.join(f"static/photos/users/{u}/", pict.filename))
-            path = os.path.join(f"static/photos/users/{u}/", pict.filename)
+            upload = cloudinary.uploader.upload(pict)
+        image_url = upload['secure_url']
+        image_id = upload['public_id']
 
-        project = Img(image_path=path, title=tit, description=des, owner=u)
+        project = Img(image_path=image_url, public_id=image_id, title=tit, description=des, owner=u)
         db.session.add(project)
         db.session.commit()
     return redirect(url_for('dash'))
@@ -198,28 +206,32 @@ def edit():
     ab = request.form.get("about")
     pfp = request.files.get('profile_img')
 
-    os.makedirs(f"static/photos/users/{u}/profile", exist_ok=True)
-
+    if pfp:
+        upload = cloudinary.uploader.upload(pfp)
+    img_url = upload['secure_url']
+    img_id = upload['public_id']
     user = db.session.execute(db.select(Store).filter_by(name=u)).scalar()
     user.about = ab
-
-    if pfp and pfp.filename != "":
-        path = os.path.join(f"static/photos/users/{u}/profile", f"{u}.jpg")
-        pfp.save(path)
-        user.profile = path
-
+    if user.pfp_id != def_id:
+        cloudinary.uploader.destroy(user.pfp_id, invalidate=True)
+    user.pfp_pic = img_url
+    user.pfp_id = img_id
     db.session.commit()
     return redirect(url_for('dash'))
 
 @app.route('/delete/<int:id>')
 def delete_image(id):
     image = db.session.execute(db.select(Img).filter_by(id=id)).scalar()
-    if os.path.exists(image.image_path):
-        os.remove(image.image_path)
-    if image:
+
+    try:
+        cloudinary.uploader.destroy(image.public_id, invalidate=True)
         db.session.delete(image)
         db.session.commit()
-        flash('Image deleted.')
+        flash("Image deleted successfully!")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"An error occurred: {str(e)}")
+
     return redirect(url_for('dash'))
 
 
@@ -245,7 +257,7 @@ def download_pdf():
             "title": image.title,
             "desc": image.description,
         })
-    PDF = generate_portfolio(user=u, email=user.mail, about=user.about, profile_pic=user.profile, artworks=art)
+    PDF = generate_portfolio(user=u, email=user.mail, about=user.about, profile_pic=user.pfp_pic, artworks=art)
 
     return send_file(PDF, as_attachment=True)
 
@@ -255,5 +267,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         db.create_all(bind_key="img")
-    app.run()
-
+    app.run(debug=True)
