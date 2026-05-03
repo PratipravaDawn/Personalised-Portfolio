@@ -21,8 +21,6 @@ class Store(db.Model):
 
 
 class Img(db.Model):
-    __bind_key__ = "img"
-
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     owner: Mapped[str] = mapped_column(String(100), nullable=False)
     title: Mapped[str] = mapped_column(String(100), nullable=False)

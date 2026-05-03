@@ -20,15 +20,12 @@ SKEY = os.getenv("SKEY")
 
 app = Flask(__name__)
 
-URLS = [os.getenv("INF_DATABASE_URL"), os.getenv("IMG_DATABASE_URL")]
-for url in URLS:
-    if url.startswith("postgres://"):
-        url = url.replace("postgres://", "postgresql://", 1)
+info_url = os.getenv("INF_DATABASE_URL")
+if info_url.startswith("postgres://"):
+    info_url = info_url.replace("postgres://", "postgresql://", 1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = URLS[0]
-app.config['SQLALCHEMY_BINDS'] = {
-    'img': URLS[1]
-}
+app.config['SQLALCHEMY_DATABASE_URI'] = info_url
+
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)
 app.secret_key = SECRET
 
@@ -280,5 +277,4 @@ def download_pdf():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-        db.create_all(bind_key="img")
     app.run(debug=True)
