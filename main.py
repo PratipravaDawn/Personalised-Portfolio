@@ -20,14 +20,19 @@ SKEY = os.getenv("SKEY")
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///information.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("INF_DATABASE_URL")
 app.config['SQLALCHEMY_BINDS'] = {
-    'img': 'sqlite:///img.db'
+    'img': os.getenv("IMG_DATABASE_URL")
 }
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)
 app.secret_key = SECRET
 
+
 db.init_app(app)
+
+with app.app_context():
+    db.drop_all()
+    db.create_all()
 
 cloudinary.config(cloud_name=CLOUD, api_key=APIKEY, api_secret=SKEY)
 
