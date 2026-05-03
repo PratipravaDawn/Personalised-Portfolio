@@ -20,13 +20,17 @@ SKEY = os.getenv("SKEY")
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("INF_DATABASE_URL")
+URLS = [os.getenv("INF_DATABASE_URL"), os.getenv("IMG_DATABASE_URL")]
+for url in URLS:
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = URLS[0]
 app.config['SQLALCHEMY_BINDS'] = {
-    'img': os.getenv("IMG_DATABASE_URL")
+    'img': URLS[1]
 }
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)
 app.secret_key = SECRET
-
 
 db.init_app(app)
 
@@ -38,6 +42,7 @@ cloudinary.config(cloud_name=CLOUD, api_key=APIKEY, api_secret=SKEY)
 
 def_pfp = "https://res.cloudinary.com/dth1zqqej/image/upload/v1774517832/default_vvlo1w.jpg"
 def_id = "default_vvlo1w"
+
 
 @app.before_request
 def session_timeout():
@@ -65,6 +70,7 @@ def login_required(f):
         if 'user' not in session:
             return redirect(url_for('red', name='login'))
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -94,7 +100,6 @@ def check():
 
 @app.route('/signin/send', methods=["GET", "POST"])
 def give():
-
     if request.method == "POST":
         username = request.form.get("uname")
         password1 = request.form.get("psw1")
@@ -119,8 +124,7 @@ def give():
                 return redirect(url_for('red', name='login'))
             def_about = f"Hello I'm {username}!!!"
 
-
-            new_user = Store(name=username, key=password1, mail=email, about=def_about, pfp_pic=def_pfp, pfp_id = def_id)
+            new_user = Store(name=username, key=password1, mail=email, about=def_about, pfp_pic=def_pfp, pfp_id=def_id)
             db.session.add(new_user)
             db.session.commit()
 
@@ -180,13 +184,16 @@ def dash():
     image_query = db.session.query(exists().where(Img.owner == u))
     if image_query:
         image_data = db.session.query(Img).filter_by(owner=u).all()
-    response = make_response(render_template('dashboard.html', u=u, m=user.mail, a=user.about, p=user.pfp_pic, i=image_query, data=image_data))
+    response = make_response(
+        render_template('dashboard.html', u=u, m=user.mail, a=user.about, p=user.pfp_pic, i=image_query,
+                        data=image_data))
 
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
 
     return response
+
 
 @app.route('/upload', methods=['POST'])
 def pictures():
@@ -204,6 +211,7 @@ def pictures():
         db.session.add(project)
         db.session.commit()
     return redirect(url_for('dash'))
+
 
 @app.route('/edit_user', methods=['POST'])
 def edit():
@@ -223,6 +231,7 @@ def edit():
     user.pfp_id = img_id
     db.session.commit()
     return redirect(url_for('dash'))
+
 
 @app.route('/delete/<int:id>')
 def delete_image(id):
@@ -248,6 +257,7 @@ def logout():
     flash(error_msg)
     return redirect(url_for('home'))
 
+
 @app.route('/pdf')
 def download_pdf():
     art = []
@@ -265,7 +275,6 @@ def download_pdf():
     PDF = generate_portfolio(user=u, email=user.mail, about=user.about, profile_pic=user.pfp_pic, artworks=art)
 
     return send_file(PDF, as_attachment=True)
-
 
 
 if __name__ == "__main__":
