@@ -114,4 +114,3 @@
 ![dashboard_light](assets/dashboard_light.png) 
 ![image window](assets/image.png) 
 ![edit profile](assets/edit.png) 
-![report](assets/report.png)
